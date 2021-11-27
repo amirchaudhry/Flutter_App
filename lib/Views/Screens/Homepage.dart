@@ -1,17 +1,18 @@
 import 'package:analog/Model/LocalUser.dart';
+import 'package:analog/Model/Reminder.dart';
 import 'package:analog/SettingsPage.dart';
-import 'package:analog/SplashScreen.dart';
 import 'package:analog/Views/Reminder/AddService.dart';
 import 'package:analog/Views/Reminder/ReminderWidget.dart';
+import 'package:analog/services/AuthService.dart';
+import 'package:analog/services/DatabaseManager.dart';
 import 'package:analog/services/NotificationService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import '../../Model/Reminder.dart';
-import '../../services/DatabaseManager.dart';
 import 'dart:ui' as ui;
 
 class Homepage extends StatefulWidget {
@@ -22,7 +23,7 @@ class Homepage extends StatefulWidget {
   final String userId;
   final reminderManager = DatabaseManager();
   final notificationService = NotificationService();
-
+  final _authService = AuthService();
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -39,7 +40,7 @@ class _MyHomePageState extends State<Homepage> {
   getUser() {
     print('HOMEPAGE: Getting User ID ....');
     if (widget.userId.isEmpty) {
-      this.localId = FirebaseAuth.instance.currentUser!.uid;
+      this.localId = widget._authService.getCurrentUser()!.uid;
     }
   }
 
@@ -71,8 +72,8 @@ class _MyHomePageState extends State<Homepage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF8DD1EF),
-      body: CustomScrollView(
+        backgroundColor: Color(0xFF8DD1EF),
+        body: CustomScrollView(
         controller: _scrollController,
         physics: BouncingScrollPhysics(),
         slivers: <Widget>[
@@ -160,18 +161,18 @@ class _MyHomePageState extends State<Homepage> {
             ),
           )
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => AddService(userId: widget.userId)));
-        },
-        tooltip: 'Add New Reminder',
-        child: Icon(Icons.add),
-        backgroundColor: Colors.deepPurple,
-      ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => AddService(userId: widget.userId)));
+          },
+          tooltip: 'Add New Reminder',
+          child: Icon(Icons.add),
+          backgroundColor: Colors.deepPurple,
+        ),
     );
   }
 

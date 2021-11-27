@@ -1,5 +1,6 @@
 import 'package:analog/Model/LocalUser.dart';
 import 'package:analog/services/DatabaseManager.dart';
+import 'package:analog/services/NotificationService.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:analog/Model/Reminder.dart';
@@ -14,6 +15,7 @@ class EditService extends StatefulWidget {
   final String remindDate;
   final String dbKey;
   final String userId;
+  final notificationService = NotificationService();
   @override
   _EditServiceState createState() => _EditServiceState();
 }
@@ -66,6 +68,11 @@ class _EditServiceState extends State<EditService> {
         LocalUser(uid: widget.userId),
         widget.dbKey,
       );
+      // Cancel the old Notification and set a new one
+      widget.notificationService.cancelNotificationWithID(widget.dueDate.millisecond);
+      // Schedule the Notification
+      if (dropdownvalue != '')
+        widget.notificationService.scheduleNotifications(reminder);
       createSnackBar("Item Updated", context);
       Navigator.pop(context);
     }

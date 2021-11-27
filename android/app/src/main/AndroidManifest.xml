@@ -2,7 +2,7 @@
     package="edu.cpp.cs4750.analog">
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
    <application
-        android:label="analog"
+        android:label="Analog"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

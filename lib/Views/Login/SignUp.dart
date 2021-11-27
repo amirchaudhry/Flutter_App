@@ -136,6 +136,8 @@ class _SignUpState extends State<SignUp> {
                     content: Text('${e.message}'),
                   ));
         }
+      } catch (e) {
+        print('SIGN_UP-PAGE: Error Signing Up - $e');
       }
     } else {
       createSnackBar('Email or Password Cannot be Empty', context);

@@ -21,7 +21,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       ),
       body: Stack(
         children: [
-          Image.asset('assets/TopImg.png', fit: BoxFit.cover,),
+          Image.asset(
+            'assets/TopImg.png',
+            fit: BoxFit.cover,
+          ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -55,12 +58,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 padding: EdgeInsets.all(4.0),
                 child: ElevatedButton(
                     onPressed: _sendPasswordLink,
-                    child: Text('Send Reset Link',
+                    child: Text(
+                      'Send Reset Link',
                       style: TextStyle(
                           color: Colors.black87,
                           fontWeight: FontWeight.bold,
-                          fontSize: 18),)
-                ),
+                          fontSize: 18),
+                    )),
               )
             ],
           ),

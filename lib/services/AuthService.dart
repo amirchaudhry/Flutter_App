@@ -25,7 +25,7 @@ class AuthService {
     _firebaseAuth.signOut();
   }
 
-  getCurrentUser() {
+  User? getCurrentUser() {
     return _firebaseAuth.currentUser;
   }
 }

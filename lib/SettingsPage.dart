@@ -1,5 +1,4 @@
 import 'package:analog/Views/Login/Login.dart';
-import 'package:analog/main.dart';
 import 'package:analog/services/AuthService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +12,7 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   final _emailController = TextEditingController();
+  final auth = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -21,9 +21,10 @@ class _SettingsPageState extends State<SettingsPage> {
         title: Text('Settings'),
       ),
       body: Stack(children: [
-        Image.asset('assets/TopImg.png', fit: BoxFit.cover,),
-        //flex: 50,
-        //child: Image.asset('assets/LoginImg.png')),
+        Image.asset(
+          'assets/TopImg.png',
+          fit: BoxFit.contain,
+        ),
         Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -61,13 +62,9 @@ class _SettingsPageState extends State<SettingsPage> {
                           fontSize: 18),
                     ),
                     onPressed: () {
-                      final auth = AuthService();
                       auth.signOut();
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                          builder: (context) =>
-                          Login()));
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Login()));
                     }),
               ), //
             ]),
@@ -77,11 +74,12 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   void initState() {
+    super.initState();
     getUserInfo();
   }
 
   void getUserInfo() {
-    _emailController.text = FirebaseAuth.instance.currentUser!.email!;
+    _emailController.text = auth.getCurrentUser()!.email!;
   }
 
   @override

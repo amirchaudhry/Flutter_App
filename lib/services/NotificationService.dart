@@ -34,13 +34,14 @@ class NotificationService {
         ticker: 'Analog');
     NotificationDetails notificationDetails = NotificationDetails(android: androidNotificationDetails);
 
+    // Schedules a notification with the DueDate as ID
     await _flutterLocalNotificationsPlugin.zonedSchedule(remObj.dueDate.millisecond, remObj.serviceName, '\$${remObj.amount.toString()} Due on ${DateFormat('MMM dd, yyyy').format(remObj.dueDate)}',
         timeDelayed, notificationDetails,
         uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
         androidAllowWhileIdle: true);
   }
 
-  Future<void> _cancelNotificationWithTag() async {
-    await _flutterLocalNotificationsPlugin.cancel(0, tag: 'tag');
+  Future<void> cancelNotificationWithID(int id) async {
+    await _flutterLocalNotificationsPlugin.cancel(id);
   }
 }

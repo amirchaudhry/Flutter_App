@@ -1,5 +1,4 @@
 import 'package:analog/Model/LocalUser.dart';
-import 'package:analog/services/AuthService.dart';
 import 'package:firebase_database/firebase_database.dart';
 import '../Model/Reminder.dart';
 
