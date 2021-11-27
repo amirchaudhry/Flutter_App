@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1039105845524",
+    "firebase_url": "https://analog-9aa2b-default-rtdb.firebaseio.com",
+    "project_id": "analog-9aa2b",
+    "storage_bucket": "analog-9aa2b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1039105845524:android:e80eb003b52477c7cffa01",
+        "android_client_info": {
+          "package_name": "edu.cpp.cs4750.analog"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1039105845524-37qvk7npkb2bdltoiqia166jgkokm71k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMGzsFSkioXpRmMDCADAIe463k6GeWUu0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1039105845524-37qvk7npkb2bdltoiqia166jgkokm71k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
