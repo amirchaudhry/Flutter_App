@@ -12,122 +12,75 @@ class ReminderWidget extends StatelessWidget {
   final String userId;
   @override
   Widget build(BuildContext context) {
-    final formattedDueDate = DateFormat('MMM dd, yyyy').format(dueDate);
-
     return Container(
       child: Padding(
         padding: const EdgeInsets.all(2.0),
-        child: Card(
-          clipBehavior: Clip.antiAlias,
-          elevation: 8,
-          child: Padding (
-            padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-            child: ListTile(
-              leading:
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 45,
-                    height: 45,
-                    decoration: BoxDecoration(
-                      color: Color(0xFF8DD1EF),
-                      borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          onTap: () { _openEditPage(context); },
+          child: Card(
+            clipBehavior: Clip.antiAlias,
+            elevation: 6,
+            shadowColor: Colors.black54,
+            child: Padding (
+              padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+              child: ListTile(
+                leading:
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 45,
+                      height: 45,
+                      decoration: BoxDecoration(
+                        color: Color(0xFF8DD1EF),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Center(
+                        child: Text(serviceName[0].toLowerCase(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25, color: Colors.deepPurple),),
+                      ),
                     ),
-                    child: Center(
-                      child: Text(serviceName[0].toLowerCase(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25, color: Colors.deepPurple),),
+                  ],
+                ),
+                trailing:
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('\$$amount', style: TextStyle(color: Colors.redAccent, fontSize: 22),),
+                  ],
+                ),
+                title: Text(serviceName, style: TextStyle(
+                  color: Colors.black87,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+
+                    Padding(
+                      padding: const EdgeInsets.only(top: 5),
+                      child: Text('Notify $remindDate ${DateFormat('MMM dd, yyyy').format(dueDate)}', style: TextStyle(color: Colors.black54, fontSize: 14),)
                     ),
-                  ),
-                ],
-              ),
-              trailing:
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.edit, color: Colors.black45, size: 24),
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Edit Item Click')));
-                      Navigator.push(
-                          context, MaterialPageRoute(builder: (_) => EditService(
-                          dbKey: dbKey,
-                          serviceName: serviceName,
-                          dueDate: dueDate,
-                          amount: amount,
-                          remindDate: remindDate,
-                          userId: userId,
-                      )));
-                    },
-                  ),
-                ],
-              ),
-              title: Text(serviceName, style: TextStyle(
-                color: Colors.black87,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Text('\$$amount', style: TextStyle(color: Colors.redAccent, fontSize: 19),)
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 5),
-                    child: Text('Notify $remindDate ${DateFormat('MMM dd, yyyy').format(dueDate)}', style: TextStyle(color: Colors.black54, fontSize: 14),)
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
-         /*  Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget> [
-              ListTile(
-                title: Text(serviceName),
-                subtitle: Text(
-                  dueDate,
-                  style: TextStyle(color: Colors.black.withOpacity(0.6)),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                child: Text(
-                  '\$ $amount',
-                  style: TextStyle(color: Colors.black.withOpacity(0.6)),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                child: Text(
-                  'Remind Set to $remindDate',
-                  style: TextStyle(color: Colors.black.withOpacity(0.6)),
-                ),
-              ),
-              ButtonBar(
-                alignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    style: TextButton.styleFrom(primary: Colors.greenAccent),
-                    onPressed: () {
-                      // Perform some action
-                    },
-                    child: const Text('EDIT'),
-                  ),
-                  TextButton(
-                    style: TextButton.styleFrom(primary: Colors.redAccent),
-                    onPressed: () {
-                      // Perform some action
-                    },
-                    child: const Text('DELETE'),
-                  ),
-                ],
-              )
-            ],
-          ),*/
         ),
       ),
     );
+  }
+
+  void _openEditPage(BuildContext context) {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (_) => EditService(
+      dbKey: dbKey,
+      serviceName: serviceName,
+      dueDate: dueDate,
+      amount: amount,
+      remindDate: remindDate,
+      userId: userId,
+    )));
   }
 }

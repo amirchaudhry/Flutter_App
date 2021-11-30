@@ -107,10 +107,12 @@ class _AddServiceState extends State<AddService> {
           iconTheme: IconThemeData(
             color: Colors.black, //change your color here
           ),
-          title: Text("Add Subscription",
+          title: Text(
+            "Add Subscription",
             style: TextStyle(
               color: Colors.black,
-            ),),
+            ),
+          ),
           backgroundColor: Color(0xFF8DD1EF),
         ),
         body: Padding(
@@ -124,16 +126,16 @@ class _AddServiceState extends State<AddService> {
                 TextFormField(
                   controller: serviceNameController,
                   decoration: InputDecoration(labelText: "Service Name"),
-                  validator: (Name) {
-                    if (Name == null) return ("Enter a Valid Service Name");
+                  validator: (val) {
+                    if (val == null) return ("Enter a Valid Service Name");
                   },
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
                   controller: amountController,
                   decoration: InputDecoration(labelText: "Amount"),
-                  validator: (Amount) {
-                    if (Amount == null) return ("Enter the amount");
+                  validator: (amt) {
+                    if (amt == null) return ("Enter the amount");
                   },
                 ),
                 const SizedBox(height: 24),
@@ -171,6 +173,7 @@ class _AddServiceState extends State<AddService> {
                         if (data != null)
                           setState(() {
                             dueDate = data;
+                            dropdownvalue = '';
                           });
                       },
                     ),
@@ -224,6 +227,10 @@ class _AddServiceState extends State<AddService> {
                           createSnackBar(
                               'Cannot set reminder before today', context);
                         }
+                      } else {
+                        setState(() {
+                          dropdownvalue = newValue;
+                        });
                       }
                     },
                     items: reminderOption.map((String items) {

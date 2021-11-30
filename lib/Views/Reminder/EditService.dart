@@ -7,7 +7,15 @@ import 'package:analog/Model/Reminder.dart';
 import 'package:intl/intl.dart';
 
 class EditService extends StatefulWidget {
-  EditService({Key? key, required this.userId, required this.serviceName, required this.dueDate, required this.amount, required this.remindDate, required this.dbKey}) : super(key: key);
+  EditService(
+      {Key? key,
+      required this.userId,
+      required this.serviceName,
+      required this.dueDate,
+      required this.amount,
+      required this.remindDate,
+      required this.dbKey})
+      : super(key: key);
   final reminderManager = DatabaseManager();
   final String serviceName;
   final DateTime dueDate;
@@ -22,7 +30,7 @@ class EditService extends StatefulWidget {
 
 class _EditServiceState extends State<EditService> {
   final formGlobalKey = GlobalKey<FormState>();
-  String dropdownvalue = '';
+  String dropDownValue = '';
   var reminderOption = [
     '',
     '1 Day Before',
@@ -38,49 +46,65 @@ class _EditServiceState extends State<EditService> {
   TextEditingController amountController = TextEditingController();
   final format = DateFormat('MM/dd/yyyy');
   DateTime dueDate = DateTime.now();
+  double totalAmount = 0.0;
+
+  _getUserData() async {
+    totalAmount =
+        await widget.reminderManager.getUserInfo(widget.userId) ?? 0.0;
+  }
+
+  void _updateUserAmount(double editedAmt) {
+    double orgAmt = double.parse(widget.amount);
+    double result = orgAmt - editedAmt;
+    if (result == 0.0) return;
+    // Total in DB - 45: Org Amt - 15 -> Changed to - 10 =  Diff - 5
+    // Subtract the difference in Firebase
+    widget.reminderManager.updateAmount(widget.userId, totalAmount - result);
+  }
 
   @override
   void initState() {
     super.initState();
-    dropdownvalue = widget.remindDate;
+    _getUserData();
+    dropDownValue = widget.remindDate;
     serviceNameController.text = widget.serviceName;
     dueDate = widget.dueDate;
     amountController.text = widget.amount;
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   void _editReminder() {
-    if (serviceNameController.text == widget.serviceName && widget.dueDate == dueDate ||
-    amountController.text == widget.amount || widget.remindDate == dropdownvalue) {
+    // Do not Change Anything if nothing is edited
+    if (serviceNameController.text == widget.serviceName &&
+        widget.dueDate == dueDate &&
+        amountController.text == widget.amount &&
+        widget.remindDate == dropDownValue) {
       Navigator.pop(context);
-    }
-    else {
-      final reminder = Reminder(
-          serviceNameController.text,
-          dueDate,
-          double.parse(amountController.text),
-          calculateRemindDate(),
-          dropdownvalue);
+    } else {
+      var remindDate = calculateRemindDate(dropDownValue);
+      final reminder = Reminder(serviceNameController.text, dueDate,
+          double.parse(amountController.text), remindDate, dropDownValue);
       widget.reminderManager.updateReminder(
         reminder,
         LocalUser(uid: widget.userId),
         widget.dbKey,
       );
+      // update the amount in Firebase
+      _updateUserAmount(double.parse(amountController.text));
       // Cancel the old Notification and set a new one
-      widget.notificationService.cancelNotificationWithID(widget.dueDate.millisecond);
+      widget.notificationService
+          .cancelNotificationWithID(widget.dueDate.millisecond);
       // Schedule the Notification
-      if (dropdownvalue != '')
+      if (dropDownValue != '')
         widget.notificationService.scheduleNotifications(reminder);
       createSnackBar("Item Updated", context);
       Navigator.pop(context);
     }
   }
 
-  DateTime calculateRemindDate() {
+  DateTime calculateRemindDate(String newValue) {
     DateTime tempDate = DateTime.now();
-    switch (dropdownvalue) {
+    switch (newValue) {
       case ('1 Day Before'):
         tempDate = dueDate.subtract(const Duration(days: 1));
         break;
@@ -116,10 +140,12 @@ class _EditServiceState extends State<EditService> {
           iconTheme: IconThemeData(
             color: Colors.black, //change your color here
           ),
-          title: Text('Edit',
+          title: Text(
+            'Edit',
             style: TextStyle(
               color: Colors.black,
-            ),),
+            ),
+          ),
           backgroundColor: Color(0xFF8DD1EF),
         ),
         body: Padding(
@@ -133,8 +159,8 @@ class _EditServiceState extends State<EditService> {
                 TextFormField(
                   controller: serviceNameController,
                   decoration: InputDecoration(labelText: "Service Name"),
-                  validator: (Name) {
-                    if (Name == null) return ("Enter a Valid Service Name");
+                  validator: (val) {
+                    if (val == null) return ("Enter a Valid Service Name");
                   },
                 ),
                 const SizedBox(height: 24),
@@ -166,18 +192,25 @@ class _EditServiceState extends State<EditService> {
                       onShowPicker: (context, currentValue) {
                         return showDatePicker(
                             context: context,
-                            firstDate: DateTime(2000),
+                            firstDate: DateTime.now(),
                             currentDate: dueDate,
                             initialDate: currentValue ?? DateTime.now(),
                             lastDate: DateTime(2100));
                       },
                       onSaved: (data) => setState(() {
                         dueDate = data!;
+                        dropDownValue = '';
                       }),
+                      onChanged: (data) {
+                        if (data != null)
+                          setState(() {
+                            dueDate = data;
+                            dropDownValue = '';
+                          });
+                      },
                     ),
                   ],
                 ),
-
                 const SizedBox(
                   height: 24,
                 ),
@@ -195,17 +228,33 @@ class _EditServiceState extends State<EditService> {
                 Container(
                   height: 40,
                   decoration: BoxDecoration(
-                    border: Border(bottom: BorderSide(color: Colors.black45, width: 1)),
+                    border: Border(
+                        bottom: BorderSide(color: Colors.black45, width: 1)),
                   ),
                   child: DropdownButton(
                     isExpanded: true,
                     isDense: true,
-                    value: dropdownvalue,
+                    value: dropDownValue,
                     icon: Icon(Icons.keyboard_arrow_down),
                     onChanged: (String? newValue) {
-                      setState(() {
-                        dropdownvalue = newValue!;
-                      });
+                      // check for valid Reminder Time
+                      if (newValue!.isEmpty) {
+                        setState(() {
+                          dropDownValue = newValue;
+                        });
+                      }
+                      else {
+                        if (calculateRemindDate(newValue)
+                                .compareTo(DateTime.now()) >=
+                            0) {
+                          setState(() {
+                            dropDownValue = newValue;
+                          });
+                        } else {
+                          createSnackBar(
+                              'Cannot set reminder before today', context);
+                        }
+                      }
                     },
                     items: reminderOption.map((String items) {
                       return DropdownMenuItem(value: items, child: Text(items));
@@ -218,11 +267,7 @@ class _EditServiceState extends State<EditService> {
                 new Row(
                   children: <Widget>[
                     ElevatedButton(
-                        onPressed: () {
-                          widget.reminderManager.deleteReminder(widget.dbKey, LocalUser(uid: widget.userId));
-                          createSnackBar('Reminder Deleted', context);
-                          Navigator.pop(context);
-                        },
+                        onPressed: _handleDeleteBtn,
                         child: Text("Delete"),
                         style: ElevatedButton.styleFrom(
                             primary: Colors.red,
@@ -255,5 +300,17 @@ class _EditServiceState extends State<EditService> {
   void createSnackBar(String message, BuildContext context) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text('$message')));
+  }
+
+  void _handleDeleteBtn() {
+    // Delete the reminder
+    widget.reminderManager
+        .deleteReminder(widget.dbKey, LocalUser(uid: widget.userId));
+    // update the amount in Firebase
+    widget.reminderManager
+        .updateAmount(widget.userId, totalAmount - double.parse(widget.amount));
+    createSnackBar('Reminder Deleted', context);
+    // Go back
+    Navigator.pop(context);
   }
 }

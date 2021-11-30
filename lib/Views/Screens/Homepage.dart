@@ -63,7 +63,7 @@ class _MyHomePageState extends State<Homepage> {
       print('HOMEPAGE: Amount - $jsonVal');
       if (jsonVal.isNotEmpty) {
         setState(() {
-          totalAmount = double.parse(jsonVal);
+          totalAmount = double.parse(jsonVal) >= 0.0 ? double.parse(jsonVal) : 0.0;
         });
       }
     });
@@ -72,8 +72,8 @@ class _MyHomePageState extends State<Homepage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color(0xFF8DD1EF),
-        body: CustomScrollView(
+      backgroundColor: Color(0xFF8DD1EF),
+      body: CustomScrollView(
         controller: _scrollController,
         physics: BouncingScrollPhysics(),
         slivers: <Widget>[
@@ -145,11 +145,7 @@ class _MyHomePageState extends State<Homepage> {
                     topLeft: Radius.circular(20.0),
                     topRight: Radius.circular(20.0)),
                 boxShadow: [
-                  BoxShadow(
-                      color: Colors.black12,
-                      spreadRadius: 1,
-                      blurRadius: 1,
-                      offset: Offset(0, 1))
+                  BoxShadow(color: Colors.black12, offset: Offset(0, 1))
                 ]),
             child: Padding(
                 padding: const EdgeInsets.only(top: 5),
@@ -161,18 +157,18 @@ class _MyHomePageState extends State<Homepage> {
             ),
           )
         ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => AddService(userId: widget.userId)));
-          },
-          tooltip: 'Add New Reminder',
-          child: Icon(Icons.add),
-          backgroundColor: Colors.deepPurple,
-        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => AddService(userId: widget.userId)));
+        },
+        tooltip: 'Add New Reminder',
+        child: Icon(Icons.add),
+        backgroundColor: Colors.deepPurple,
+      ),
     );
   }
 
@@ -182,51 +178,64 @@ class _MyHomePageState extends State<Homepage> {
         physics: BouncingScrollPhysics(),
         padding: const EdgeInsets.all(8),
         shrinkWrap: true,
-        duration: const Duration(minutes: 1),
         query: widget.reminderManager.getMessageQuery(widget.userId),
         itemBuilder: (context, DataSnapshot snapshot, animation, index) {
-          if (snapshot.value != null) {
+          if (!snapshot.exists || snapshot.value == null) {
+            return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    "No Reminders Added!",
+                    style: TextStyle(
+                        color: Colors.black54,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w400),
+                  ),
+                ));
+          }
+          else {
             final jsonValue = snapshot.value as Map<dynamic, dynamic>;
             final reminderValue = Reminder.fromJson(jsonValue);
             if (!this.reminderList.contains(reminderValue))
               this.reminderList.add(reminderValue);
             return Dismissible(
-              direction: DismissDirection.endToStart,
-              onDismissed: (direction) {
-                if (direction == DismissDirection.endToStart) {
-                  var tempRem = reminderList[index];
-                  setState(() {
-                    reminderList.remove(index);
-                  });
-                  calculateTotalAmount(tempRem);
-                  widget.reminderManager.deleteReminder(
-                      snapshot.key!, LocalUser(uid: widget.userId));
-                  createSnackBar('Item Deleted at $index', context);
-                }
-              },
-              key: UniqueKey(),
-              background: Container(
-                color: Colors.deepOrange,
-              ),
-              child: ReminderWidget(
-                  userId: widget.userId,
-                  dbKey: snapshot.key!,
-                  serviceName: reminderValue.serviceName,
-                  dueDate: reminderValue.dueDate,
-                  amount: reminderValue.amount.toString(),
-                  remindDate: reminderValue.setReminder),
-            );
-          } else {
-            return Center(
-                child: Text(
-              "No Reminders added yet!",
-              style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w400),
-            ));
+                direction: DismissDirection.endToStart,
+                onDismissed: (direction) {
+                  if (direction == DismissDirection.endToStart) {
+                    widget.reminderManager.updateAmount(
+                        widget.userId, totalAmount - reminderValue.amount);
+                    calculateTotalAmount(reminderValue);
+                    widget.reminderManager.deleteReminder(
+                        snapshot.key!, LocalUser(uid: widget.userId));
+                    reminderList.removeAt(index);
+                    createSnackBar('Item Deleted at $index', context);
+                    setState(() {});
+                  }
+                },
+                key: UniqueKey(),
+                background: Container(
+                  color: Colors.deepOrange,
+                ),
+                child: ReminderWidget(
+                    userId: widget.userId,
+                    dbKey: snapshot.key!,
+                    serviceName: reminderValue.serviceName,
+                    dueDate: reminderValue.dueDate,
+                    amount: reminderValue.amount.toString(),
+                    remindDate: reminderValue.setReminder));
           }
-        });
+        },
+        defaultChild: Center(
+            child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            "Loading Reminders...",
+            style: TextStyle(
+                color: Colors.black54,
+                fontSize: 24,
+                fontWeight: FontWeight.w400),
+          ),
+        )));
   }
 
   void createSnackBar(String message, BuildContext context) {
@@ -235,10 +244,14 @@ class _MyHomePageState extends State<Homepage> {
   }
 
   calculateTotalAmount(Reminder remObj) {
-    setState(() {
-      totalAmount -= remObj.amount;
-    });
-    widget.reminderManager.updateAmount(widget.userId, totalAmount);
+    double newAmt = totalAmount - remObj.amount;
+    if (newAmt >= 0.0) {
+      totalAmount = newAmt;
+    }
+    else {
+      totalAmount = 0.0;
+    }
+    setState(() {});
   }
 
   _formatCurrency(num) {
