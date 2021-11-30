@@ -18,7 +18,14 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings'),
+        iconTheme: IconThemeData(
+          color: Colors.black, //change your color here
+        ),
+        title: Text('Settings',
+          style: TextStyle(
+            color: Colors.black,
+          ),),
+        backgroundColor: Color(0xFF8DD1EF),
       ),
       body: Stack(children: [
         Image.asset(
@@ -30,7 +37,7 @@ class _SettingsPageState extends State<SettingsPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                margin: EdgeInsets.only(top: 140, bottom: 5),
+                margin: EdgeInsets.only(top: 110, bottom: 5),
                 child: Text(
                   'Settings',
                   style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),

@@ -104,7 +104,14 @@ class _AddServiceState extends State<AddService> {
     return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: Text("Add Subscription"),
+          iconTheme: IconThemeData(
+            color: Colors.black, //change your color here
+          ),
+          title: Text("Add Subscription",
+            style: TextStyle(
+              color: Colors.black,
+            ),),
+          backgroundColor: Color(0xFF8DD1EF),
         ),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),

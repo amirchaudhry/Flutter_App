@@ -25,7 +25,14 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Log in'),
+          iconTheme: IconThemeData(
+            color: Colors.black, //change your color here
+          ),
+          title: Text('Sign Up',
+            style: TextStyle(
+              color: Colors.black,
+            ),),
+          backgroundColor: Color(0xFF8DD1EF),
         ),
         body: Stack(
           children: [

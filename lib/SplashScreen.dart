@@ -40,7 +40,8 @@ class _SplashScreenState extends State<SplashScreen> {
         children: <Widget>[
           Container(
             decoration: BoxDecoration(
-              color: Color(0xFFFAEDE6),
+              color: Colors.white,
+              //color: Color(0xFFFAEDE6),
             ),
           ),
           Column(
