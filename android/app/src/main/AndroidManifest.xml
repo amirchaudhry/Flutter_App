@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="edu.cpp.cs4750.analog">
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+        <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+        <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:label="Analog"
         android:icon="@mipmap/ic_launcher">
